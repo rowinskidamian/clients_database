@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class CompanyDTO {
     private long id;
-    private LocalDateTime operationDate;
+    private LocalDateTime modificationDate;
     private String companyName;
     private int nip;
 }

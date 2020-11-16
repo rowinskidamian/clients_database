@@ -1,17 +1,19 @@
 package pl.damianrowinski.clients_database.rest;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.damianrowinski.clients_database.domain.dto.CompanyDTO;
 import pl.damianrowinski.clients_database.services.CompanyService;
 
+import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
+@Transactional
 @RequestMapping("/api/company")
 @RequiredArgsConstructor
 public class CompanyRestController {
@@ -29,13 +31,19 @@ public class CompanyRestController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompanyDTO saveCompany(@RequestBody CompanyDTO company) {
-        return companyService.add(company);
+    public ResponseEntity<CompanyDTO> saveCompany(@RequestBody CompanyDTO company) {
+        CompanyDTO companyCreated = companyService.add(company);
+        URI companyLocation = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(companyCreated.getId())
+                .toUri();
+        return ResponseEntity.created(companyLocation)
+                .body(companyCreated);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CompanyDTO> updateCompany(@RequestBody CompanyDTO company, @PathVariable Long id) {
         company.setId(id);
         return companyService.edit(company)
@@ -43,12 +51,11 @@ public class CompanyRestController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CompanyDTO> deleteCompany(@PathVariable Long id) {
         return companyService.delete(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
 
 }

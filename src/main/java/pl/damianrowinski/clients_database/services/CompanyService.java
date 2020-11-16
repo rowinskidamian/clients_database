@@ -41,8 +41,9 @@ public class CompanyService {
         Optional<Company> optionalCompany = companyRepository.findById(companyDTO.getId());
         if (optionalCompany.isEmpty()) return Optional.empty();
         Company companyToUpdate = companyAssembler.convertToEntityFromData(companyDTO);
-        companyRepository.save(companyToUpdate);
-        return Optional.of(companyDTO);
+        Company savedCompany = companyRepository.save(companyToUpdate);
+        CompanyDTO companyEditedDTO = companyAssembler.convertToDataFromEntity(savedCompany);
+        return Optional.of(companyEditedDTO);
     }
 
     public Optional<CompanyDTO> delete (Long id) {

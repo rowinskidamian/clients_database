@@ -13,28 +13,28 @@ import java.time.format.DateTimeFormatter;
 @MappedSuperclass
 @Transactional
 @Getter @Setter @ToString @EqualsAndHashCode
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "operation_date", nullable = false, updatable = false)
-    private LocalDateTime operationDate;
+    @Column(name = "modification_date", nullable = false)
+    private LocalDateTime modificationDate;
 
     @PrePersist
-    public void addOperationDate() {
-        updateDate();
+    public void addModificationDate() {
+        updateModificationDate();
     }
 
     @PreUpdate
-    public void editOperationDate() {
-        updateDate();
+    public void editModificationDate() {
+        updateModificationDate();
     }
 
-    private void updateDate() {
+    private void updateModificationDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-M-y HH:mm");
         String currentDateFormatted = LocalDateTime.now().format(formatter);
-        operationDate = LocalDateTime.parse(currentDateFormatted, formatter);
+        modificationDate = LocalDateTime.parse(currentDateFormatted, formatter);
     }
 }
