@@ -26,7 +26,7 @@ public class CompanyService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<CompanyDTO> findById(long id) {
+    public Optional<CompanyDTO> findById(Long id) {
         return companyRepository.findById(id)
                 .map(companyAssembler::convertToDataFromEntity);
     }
@@ -45,7 +45,7 @@ public class CompanyService {
         return Optional.of(companyDTO);
     }
 
-    public Optional<CompanyDTO> delete (long id) {
+    public Optional<CompanyDTO> delete (Long id) {
         Optional<Company> optionalCompany = companyRepository.findById(id);
         if (optionalCompany.isEmpty()) return Optional.empty();
         Company companyToDelete = optionalCompany.get();
