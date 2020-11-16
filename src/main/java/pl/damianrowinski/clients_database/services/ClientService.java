@@ -62,7 +62,7 @@ public class ClientService {
     }
 
     private void throwIfClientsCompanyIsNotPresent(ClientDTO clientDTO) {
-        Optional<CompanyDTO> optionalCompany = companyService.findById(clientDTO.getCompanyData().getId());
+        Optional<CompanyDTO> optionalCompany = companyService.findById(clientDTO.getCompany().getId());
         if (optionalCompany.isEmpty())
             throw new CompanyNotFoundException("Company not found, firstly add company, then client.");
     }

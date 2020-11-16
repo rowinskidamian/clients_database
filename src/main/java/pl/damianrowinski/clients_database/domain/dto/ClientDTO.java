@@ -12,5 +12,5 @@ public class ClientDTO {
     private LocalDateTime modificationDate;
     private String firstName;
     private String lastName;
-    private CompanyDTO companyData;
+    private CompanyDTO company;
 }

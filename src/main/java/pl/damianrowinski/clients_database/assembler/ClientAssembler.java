@@ -16,13 +16,13 @@ public class ClientAssembler {
     public ClientDTO convertToDataFromEntity(Client client){
         ClientDTO clientData = modelMapper.map(client, ClientDTO.class);
         CompanyDTO companyData = modelMapper.map(client.getCompany(), CompanyDTO.class);
-        clientData.setCompanyData(companyData);
+        clientData.setCompany(companyData);
         return clientData;
     }
 
     public Client convertToEntityFromData(ClientDTO clientDTO) {
         Client clientConverted = modelMapper.map(clientDTO, Client.class);
-        Company companyConverted = modelMapper.map(clientDTO.getCompanyData(), Company.class);
+        Company companyConverted = modelMapper.map(clientDTO.getCompany(), Company.class);
         clientConverted.setCompany(companyConverted);
         return clientConverted;
     }
