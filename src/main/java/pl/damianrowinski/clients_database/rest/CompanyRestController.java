@@ -13,7 +13,6 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@Transactional
 @RequestMapping("/api/company")
 @RequiredArgsConstructor
 public class CompanyRestController {
