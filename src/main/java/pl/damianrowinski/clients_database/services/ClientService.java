@@ -1,7 +1,6 @@
 package pl.damianrowinski.clients_database.services;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.damianrowinski.clients_database.assembler.ClientAssembler;
 import pl.damianrowinski.clients_database.domain.dto.ClientDTO;
@@ -36,12 +35,36 @@ public class ClientService {
     }
 
     public ClientDTO add(ClientDTO clientDTO) {
-        Optional<CompanyDTO> optionalCompany = companyService.findById(clientDTO.getCompanyData().getId());
-        if (optionalCompany.isEmpty())
-            throw new CompanyNotFoundException("Company not found, firstly add company, then client.");
+        throwIfClientsCompanyIsNotPresent(clientDTO);
         Client clientToAdd = clientAssembler.convertToEntityFromData(clientDTO);
         Client savedClient = clientRepository.save(clientToAdd);
         return clientAssembler.convertToDataFromEntity(savedClient);
+    }
+
+    public Optional<ClientDTO> edit(ClientDTO clientDTO) {
+        throwIfClientsCompanyIsNotPresent(clientDTO);
+
+        Optional<Client> optionalClient = clientRepository.findById(clientDTO.getId());
+        if(optionalClient.isEmpty()) return Optional.empty();
+        Client clientToUpdate = clientAssembler.convertToEntityFromData(clientDTO);
+        Client updatedClient = clientRepository.save(clientToUpdate);
+        ClientDTO updatedClientDTO = clientAssembler.convertToDataFromEntity(updatedClient);
+        return Optional.of(updatedClientDTO);
+    }
+
+    public Optional<ClientDTO> delete (Long id) {
+        Optional<Client> optionalClient = clientRepository.findById(id);
+        if(optionalClient.isEmpty()) return Optional.empty();
+        Client clientToDelete = optionalClient.get();
+        clientRepository.delete(clientToDelete);
+        ClientDTO clientDTO = clientAssembler.convertToDataFromEntity(clientToDelete);
+        return Optional.of(clientDTO);
+    }
+
+    private void throwIfClientsCompanyIsNotPresent(ClientDTO clientDTO) {
+        Optional<CompanyDTO> optionalCompany = companyService.findById(clientDTO.getCompanyData().getId());
+        if (optionalCompany.isEmpty())
+            throw new CompanyNotFoundException("Company not found, firstly add company, then client.");
     }
 
 }
