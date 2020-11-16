@@ -8,7 +8,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.damianrowinski.clients_database.domain.dto.CompanyDTO;
 import pl.damianrowinski.clients_database.services.CompanyService;
 
-import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.List;
 

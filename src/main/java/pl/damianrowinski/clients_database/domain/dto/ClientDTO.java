@@ -1,7 +1,6 @@
 package pl.damianrowinski.clients_database.domain.dto;
 
 import lombok.Data;
-import pl.damianrowinski.clients_database.domain.entities.Company;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
