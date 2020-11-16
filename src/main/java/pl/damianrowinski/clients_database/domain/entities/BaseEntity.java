@@ -19,7 +19,7 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "created_date", nullable = false, updatable = false)
+    @Column(name = "operation_date", nullable = false, updatable = false)
     private LocalDateTime operationDate;
 
     @PrePersist
