@@ -8,6 +8,7 @@ import pl.damianrowinski.clients_database.domain.dto.CompanyDTO;
 import pl.damianrowinski.clients_database.domain.entities.Client;
 import pl.damianrowinski.clients_database.domain.repositories.ClientRepository;
 import pl.damianrowinski.clients_database.exceptions.CompanyNotFoundException;
+import pl.damianrowinski.clients_database.exceptions.ObjectInRelationshipException;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -36,6 +37,8 @@ public class ClientService {
 
     public ClientDTO add(ClientDTO clientDTO) {
         throwIfClientsCompanyIsNotPresent(clientDTO);
+        throwIfCompanyHasGotClient(clientDTO);
+
         Client clientToAdd = clientAssembler.convertToEntityFromData(clientDTO);
         Client savedClient = clientRepository.save(clientToAdd);
         return clientAssembler.convertToDataFromEntity(savedClient);
@@ -43,18 +46,19 @@ public class ClientService {
 
     public Optional<ClientDTO> edit(ClientDTO clientDTO) {
         throwIfClientsCompanyIsNotPresent(clientDTO);
+        throwIfCompanyHasGotClient(clientDTO);
 
         Optional<Client> optionalClient = clientRepository.findById(clientDTO.getId());
-        if(optionalClient.isEmpty()) return Optional.empty();
+        if (optionalClient.isEmpty()) return Optional.empty();
         Client clientToUpdate = clientAssembler.convertToEntityFromData(clientDTO);
         Client updatedClient = clientRepository.save(clientToUpdate);
         ClientDTO updatedClientDTO = clientAssembler.convertToDataFromEntity(updatedClient);
         return Optional.of(updatedClientDTO);
     }
 
-    public Optional<ClientDTO> delete (Long id) {
+    public Optional<ClientDTO> delete(Long id) {
         Optional<Client> optionalClient = clientRepository.findById(id);
-        if(optionalClient.isEmpty()) return Optional.empty();
+        if (optionalClient.isEmpty()) return Optional.empty();
         Client clientToDelete = optionalClient.get();
         clientRepository.delete(clientToDelete);
         ClientDTO clientDTO = clientAssembler.convertToDataFromEntity(clientToDelete);
@@ -65,6 +69,13 @@ public class ClientService {
         Optional<CompanyDTO> optionalCompany = companyService.findById(clientDTO.getCompany().getId());
         if (optionalCompany.isEmpty())
             throw new CompanyNotFoundException("Company not found, firstly add company, then client.");
+    }
+
+    private void throwIfCompanyHasGotClient(ClientDTO clientDTO) {
+        Optional<Client> optionalClient = clientRepository.findFirstByCompany_Id(clientDTO.getCompany().getId());
+        if (optionalClient.isPresent())
+            throw new ObjectInRelationshipException
+                    ("Company is already connected to some client, please add different company.");
     }
 
 }

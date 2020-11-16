@@ -21,6 +21,6 @@ public class Client extends BaseEntity{
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @OneToOne
+    @OneToOne(optional = false)
     private Company company;
 }

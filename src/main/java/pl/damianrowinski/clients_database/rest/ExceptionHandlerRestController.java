@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.damianrowinski.clients_database.exceptions.CompanyNotFoundException;
+import pl.damianrowinski.clients_database.exceptions.ObjectInRelationshipException;
 
 @ControllerAdvice(basePackages = "pl.damianrowinski.clients_database.rest")
 @Slf4j
@@ -18,4 +19,13 @@ public class ExceptionHandlerRestController {
         log.error("Raised CompanyNotFoundException");
         return ex.getMessage();
     }
+
+    @ResponseBody
+    @ExceptionHandler({ObjectInRelationshipException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String objectInRelationship(ObjectInRelationshipException ex) {
+        log.error("Raised ObjectInRelationshipException");
+        return ex.getMessage();
+    }
+
 }
