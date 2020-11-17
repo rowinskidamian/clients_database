@@ -77,5 +77,16 @@ class CompanyRestControllerTest {
                 .andExpect(content().json(companyJSON));
     }
 
+    @Test
+    void givenIdNotPresentInDatabaseShouldReturnNotFound() throws Exception {
+        when(companyService.findById(companyId1)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/company/{id}", companyId1))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+
 
 }
