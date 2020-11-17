@@ -1,5 +1,6 @@
 package pl.damianrowinski.clients_database.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import pl.damianrowinski.clients_database.services.CompanyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -21,19 +23,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CompanyRestController.class)
 class CompanyRestControllerTest {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @MockBean private CompanyService companyService;
+    @MockBean
+    private CompanyService companyService;
 
+    private long companyId1;
     private CompanyDTO companyData1;
     private CompanyDTO companyData2;
     private List<CompanyDTO> companyDataList;
 
     @BeforeEach
     void init() {
+        companyId1 = 1;
         companyData1 = new CompanyDTO();
-        companyData1.setId(1);
+        companyData1.setId(companyId1);
         companyData1.setCompanyName("Coca-cola");
         companyData1.setModificationDate(LocalDateTime.now());
         companyData1.setNip(111_111);
@@ -55,9 +62,19 @@ class CompanyRestControllerTest {
 
         mockMvc.perform(get("/api/company"))
                 .andExpect(status().isOk())
-                .andExpect(content()
-                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(companyListJSON));
+    }
+
+    @Test
+    void givenPathVariableShouldReturnCompanyData() throws Exception {
+        String companyJSON = objectMapper.writeValueAsString(companyData1);
+        when(companyService.findById(companyId1)).thenReturn(Optional.of(companyData1));
+
+        mockMvc.perform(get("/api/company/{id}", companyId1))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(companyJSON));
     }
 
 
