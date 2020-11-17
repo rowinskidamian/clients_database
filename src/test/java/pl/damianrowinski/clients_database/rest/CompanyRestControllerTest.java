@@ -1,5 +1,6 @@
 package pl.damianrowinski.clients_database.rest;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +36,10 @@ class CompanyRestControllerTest {
     private CompanyDTO companyData1;
     private CompanyDTO companyData2;
     private List<CompanyDTO> companyDataList;
+    private String companyJSON;
 
     @BeforeEach
-    void init() {
+    void init() throws JsonProcessingException {
         companyId1 = 1;
         companyData1 = new CompanyDTO();
         companyData1.setId(companyId1);
@@ -52,6 +54,8 @@ class CompanyRestControllerTest {
         companyData2.setNip(222_222);
 
         companyDataList = List.of(companyData1, companyData2);
+
+        companyJSON = objectMapper.writeValueAsString(companyData1);
     }
 
 
@@ -68,7 +72,6 @@ class CompanyRestControllerTest {
 
     @Test
     void givenPathVariableShouldReturnCompanyData() throws Exception {
-        String companyJSON = objectMapper.writeValueAsString(companyData1);
         when(companyService.findById(companyId1)).thenReturn(Optional.of(companyData1));
 
         mockMvc.perform(get("/api/company/{id}", companyId1))
@@ -85,8 +88,17 @@ class CompanyRestControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void givenCompanyDataJsonShouldReturnCompanyDataJson() throws Exception {
+        when(companyService.add(companyData1)).thenReturn(companyData1);
 
-
+        mockMvc.perform(post("/api/company")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(companyJSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(companyJSON));
+    }
 
 
 }
